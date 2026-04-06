@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+<h2>Ticket #{{ ticket.id }}: {{ ticket.title }}</h2>
+
+<!-- ticket details -->
+<div class="card mb-4">
+    <div class="card-body">
+        <p><strong>Description:</strong></p>
+        <p>{{ ticket.description }}</p>
+        <hr>
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Status:</strong>
+                {% if ticket.status == 'open' %}
+                <span class="badge bg-success">Open</span>
+                {% elif ticket.status == 'in_progress' %}
+                <span class="badge bg-primary">In Progress</span>
+                {% elif ticket.status == 'closed' %}
+                <span class="badge bg-secondary">Closed</span>
+                {% endif %}
+            </div>
+            <div class="col-md-3">
+                <strong>Priority:</strong>
+                {% if ticket.priority == 'high' %}
+                <span class="badge bg-danger">High</span>
+                {% elif ticket.priority == 'medium' %}
+                <span class="badge bg-warning text-dark">Medium</span>
+                {% elif ticket.priority == 'low' %}
+                <span class="badge bg-info">Low</span>
+                {% endif %}
+            </div>
+            <div class="col-md-3">
+                <strong>Created by:</strong> {{ ticket.creator.username }}
+            </div>
+            <div class="col-md-3">
+                <strong>Assigned to:</strong> {{ ticket.assignee.username if ticket.assignee else 'Unassigned' }}
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3">
+                <strong>Created:</strong> {{ ticket.created_at.strftime('%d/%m/%Y %H:%M') }}
+            </div>
+            <div class="col-md-3">
+                <strong>Last updated:</strong> {{ ticket.updated_at.strftime('%d/%m/%Y %H:%M') if ticket.updated_at else 'N/A' }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- action buttons -->
+<div class="mb-4">
+    {% if current_user.is_admin() or ticket.created_by == current_user.id %}
+    <a href="{{ url_for('tickets.edit_ticket', ticket_id=ticket.id) }}" class="btn btn-primary">Edit Ticket</a>
+    {% endif %}
+
+    {% if current_user.is_admin() %}
+    <form method="POST" action="{{ url_for('tickets.delete_ticket', ticket_id=ticket.id) }}" class="d-inline"
+          onsubmit="return confirm('Are you sure you want to delete this ticket?');">
+        <button type="submit" class="btn btn-danger">Delete Ticket</button>
+    </form>
+    {% endif %}
+
+    <a href="{{ url_for('tickets.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<!-- ticket history -->
+<h4>Change History</h4>
+{% if ticket.history %}
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Previous Value</th>
+            <th>New Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in ticket.history %}
+        <tr>
+            <td>{{ entry.changed_at.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ entry.user.username }}</td>
+            <td>{{ entry.action }}</td>
+            <td>{{ entry.old_value if entry.old_value else '-' }}</td>
+            <td>{{ entry.new_value if entry.new_value else '-' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No history recorded for this ticket.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Create Ticket{% endblock %}
+
+{% block content %}
+<h2>Create New Ticket</h2>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title" maxlength="150" required>
+    </div>
+    <div class="mb-2">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+    </div>
+    <div class="mb-1">
+        <label for="priority" class="form-label">Priority</label>
+        <select class="form-select" id="priority" name="priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
+    </div>
+
+    <!-- only admin can assign tickets to users -->
+    {% if current_user.is_admin() %}
+    <div class="mb-2">
+        <label for="assigned_to" class="form-label">Assign To</label>
+        <select class="form-select" id="assigned_to" name="assigned_to">
+            <option value="">Unassigned</option>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Create Ticket</button>
+    <a href="{{ url_for('tickets.dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

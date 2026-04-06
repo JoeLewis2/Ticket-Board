@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Edit Ticket{% endblock %}
+
+{% block content %}
+<h2>Edit Ticket #{{ ticket.id }}</h2>
+
+<form method="POST">
+    <div class="mb-2">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title" maxlength="150"
+               value="{{ ticket.title }}" required>
+    </div>
+    <div class="mb-1">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="4"
+                  required>{{ ticket.description }}</textarea>
+    </div>
+
+    <!-- admin only fields -->
+    {% if current_user.is_admin() %}
+    <div class="mb-2">
+        <label for="status" class="form-label">Status</label>
+        <select class="form-select" id="status" name="status">
+            <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
+            <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+            <option value="closed" {% if ticket.status == 'closed' %}selected{% endif %}>Closed</option>
+        </select>
+    </div>
+    <div class="mb-2">
+        <label for="priority" class="form-label">Priority</label>
+        <select class="form-select" id="priority" name="priority">
+            <option value="low" {% if ticket.priority == 'low' %}selected{% endif %}>Low</option>
+            <option value="medium" {% if ticket.priority == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="high" {% if ticket.priority == 'high' %}selected{% endif %}>High</option>
+        </select>
+    </div>
+    <div class="mb-2">
+        <label for="assigned_to" class="form-label">Assign To</label>
+        <select class="form-select" id="assigned_to" name="assigned_to">
+            <option value="">Unassigned</option>
+            {% for user in users %}
+            <option value="{{ user.id }}" {% if ticket.assigned_to == user.id %}selected{% endif %}>
+                {{ user.username }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

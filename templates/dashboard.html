@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Ticket Dashboard</h2>
+
+<!-- status filter -->
+<form method="GET" class="mb-3">
+    <div class="row align-items-end">
+        <div class="col-auto">
+            <label for="status" class="form-label">Filter by status:</label>
+            <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+                <option value="open" {% if status_filter == 'open' %}selected{% endif %}>Open</option>
+                <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+                <option value="closed" {% if status_filter == 'closed' %}selected{% endif %}>Closed</option>
+            </select>
+        </div>
+    </div>
+</form>
+
+{% if tickets %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Created By</th>
+            <th>Assigned To</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.id }}</td>
+            <td><a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}">{{ ticket.title }}</a></td>
+            <td>
+                {% if ticket.status == 'open' %}
+                <span class="badge bg-success">Open</span>
+                {% elif ticket.status == 'in_progress' %}
+                <span class="badge bg-primary">In Progress</span>
+                {% elif ticket.status == 'closed' %}
+                <span class="badge bg-secondary">Closed</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if ticket.priority == 'high' %}
+                <span class="badge bg-danger">High</span>
+                {% elif ticket.priority == 'medium' %}
+                <span class="badge bg-warning text-dark">Medium</span>
+                {% elif ticket.priority == 'low' %}
+                <span class="badge bg-info">Low</span>
+                {% endif %}
+            </td>
+            <td>{{ ticket.creator.username }}</td>
+            <td>{{ ticket.assignee.username if ticket.assignee else 'Unassigned' }}</td>
+            <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No tickets found.</p>
+{% endif %}
+{% endblock %}
