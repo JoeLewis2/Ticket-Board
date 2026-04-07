@@ -43,7 +43,7 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
+app = create_app()
 
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=True)
