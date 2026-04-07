@@ -1,15 +1,9 @@
-from app import create_app
 from extensions import db
 from models import User, Ticket, TicketHistory
 from datetime import datetime, timedelta
 
-# this script populates the database with sample data for testing
-app = create_app()
 
-with app.app_context():
-    # drop all existing data and recreate tables
-    db.drop_all()
-    db.create_all()
+def seed_database(app=None):
 
     # create 10 users (2 admins, 8 employees)
     users = [
@@ -144,3 +138,12 @@ with app.app_context():
     print('Database seeded successfully.')
     print(f'Created {len(users)} users, {len(tickets)} tickets, {len(history_entries)} history entries.')
     print('Default login: admin / password123')
+
+
+if __name__ == '__main__':
+    from app import create_app
+    app = create_app()
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        seed_database(app)

@@ -29,6 +29,11 @@ def create_app():
         from models import User, Ticket, TicketHistory
         db.create_all()
 
+        # seed the database on first run
+        if User.query.count() == 0:
+            from seed import seed_database
+            seed_database(app)
+
     return app
 
 
