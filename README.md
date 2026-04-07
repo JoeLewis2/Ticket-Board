@@ -48,7 +48,7 @@ To run locally:
 
 Default Login Credentials 
 -------------------------- 
-The seed script adds four users which you can login with.
+The seed script adds ten users which you can login with.
 
 Username | Password | Role 
 -------- | -------- | ------ 
@@ -56,6 +56,12 @@ admin | password123 | Admin
 sarah.jones | password123 | Admin 
 james.smith | password123 | Employee 
 emma.wilson | password123 | Employee 
+david.brown | password123 | Employee 
+lucy.taylor | password123 | Employee 
+mark.davies | password123 | Employee 
+sophie.evans | password123 | Employee 
+tom.harris | password123 | Employee 
+hannah.clark | password123 | Employee 
 
 All passwords are: `password123` 
 
